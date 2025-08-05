@@ -1,10 +1,11 @@
 import express from 'express'
-import { getLands, addLand } from '../controllers/land.controler'
-import { protect } from '../middleware/auth.middleware'
+import { deleteLand, updateLand, getAllLands, getLandById, createLand } from '../controllers/land.controller'
 
 const router = express.Router()
 
-router.get('/', getLands)
-router.post('/', protect, addLand)
-
+router.get('/getalllands', getAllLands)
+router.get('/getlandbyid/:id', getLandById)
+router.post('/createland', createLand)
+router.put('/updateland/:id', updateLand)
+router.delete('/deleteland/:id', deleteLand)
 export default router
