@@ -205,6 +205,7 @@ export const uploadImage = async (req: Request, res: Response) => {
 ```
 5. Plug into main ``app.ts``
 ``app.use('/api', uploadRouter)``
+![Cloudinary Upload Flow](./public/cloudinaryflow.drawio.png)
 
 ### 📦 Installation
 

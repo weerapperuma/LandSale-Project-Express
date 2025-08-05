@@ -23,6 +23,7 @@ const landAdSchema = new Schema<ILandAd>({
   images: { type: [String], required: false },
   isApproved: { type: Boolean, default: false },
   userId: { type: String, required: true },
-})
+}, { timestamps: true }
+)
 
 export default mongoose.model<ILandAd>('LandAd', landAdSchema)
