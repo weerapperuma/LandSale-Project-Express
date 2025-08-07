@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import landRoutes from './routes/land.routes'
 import authRoutes from './routes/auth.routes'
+import userRoutes from './routes/user.routes'
 import uploadRoutes from './routes/upload.route'
 
 dotenv.config()
@@ -12,6 +13,7 @@ app.use(express.json())
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/lands', landRoutes)
 app.use('/api/v1/upload', uploadRoutes)
+app.use('/api/v1/user',userRoutes)
 
 // Global error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

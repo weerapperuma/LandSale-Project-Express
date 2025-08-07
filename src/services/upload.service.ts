@@ -18,8 +18,8 @@ export class UploadService {
                 const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
                     const uploadStream = cloudinary.uploader.upload_stream(
                         {
-                            folder: 'land_ads',
-                            transformation: [{ width: 800, height: 600, crop: 'limit' }],
+                        folder: 'land_ads',
+                        transformation: [{ width: 800, height: 600, crop: 'limit' }],
                             resource_type: 'image',
                         },
                         (error, result) => {

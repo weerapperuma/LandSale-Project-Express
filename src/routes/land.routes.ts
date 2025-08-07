@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import { protect } from '../middleware/auth.middleware';
 import {
     createLand,
     getAllLands,
@@ -21,13 +22,15 @@ const upload = multer({
     }
 });
 
-// Routes
-router.post('/', upload.array('images', 10), createLand);              // Create with images
-router.get('/', getAllLands);                                          // Get all
-router.get('/:id', getLandById);                                       // Get by ID
-router.put('/:id', upload.array('images', 10), updateLand);           // Update with optional new images
-router.delete('/:id', deleteLand);                                     // Delete (removes images too)
-router.put('/:id/images', upload.array('images', 10), updateLandImages); // Update only images
-router.delete('/:id/images', removeImagesFromLand);                    // Remove specific images
+// Public routes (no authentication required)
+router.get('/', getAllLands);                                          // Get all lands
+router.get('/:id', getLandById);                                       // Get land by ID
+
+// Protected routes (authentication required)
+router.post('/', protect, upload.array('images', 10), createLand);              // Create with images
+router.put('/:id', protect, upload.array('images', 10), updateLand);           // Update with optional new images
+router.delete('/:id', protect, deleteLand);                                     // Delete (removes images too)
+router.put('/:id/images', protect, upload.array('images', 10), updateLandImages); // Update only images
+router.delete('/:id/images', protect, removeImagesFromLand);                    // Remove specific images
 
 export default router;

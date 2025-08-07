@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 // Create land ad with images and detailed logging
 export const createLand = async (req: Request, res: Response) => {
   console.log('=== CREATE LAND REQUEST ===');
+  console.log('User:', (req as any).user);
   console.log('Body:', req.body);
   console.log('Files:', req.files ? (req.files as Express.Multer.File[]).map(f => ({
     originalname: f.originalname,
@@ -13,7 +14,8 @@ export const createLand = async (req: Request, res: Response) => {
 
   try {
     // Validate required fields
-    const { title, description, district, city, price, size, userId } = req.body;
+    const { title, description, district, city, price, size ,userId} = req.body;
+    console.log("land controller",title,description,district,city,price,size)
 
     if (!title || !description || !district || !city || !price || !size || !userId) {
       return res.status(400).json({
@@ -105,12 +107,30 @@ export const getLandById = async (req: Request, res: Response) => {
 // Update land ad with optional new images
 export const updateLand = async (req: Request, res: Response) => {
   console.log('=== UPDATE LAND REQUEST ===');
+  console.log('User:', (req as any).user);
   console.log('ID:', req.params.id);
   console.log('Body:', req.body);
   console.log('Files:', req.files ? (req.files as Express.Multer.File[]).length : 0);
 
   try {
     const startTime = Date.now();
+    const userId = (req as any).user.id;
+
+    // Check if user owns this land ad
+    const existingLand = await LandService.getLandById(req.params.id);
+    if (!existingLand) {
+      return res.status(404).json({
+        success: false,
+        error: 'Land ad not found'
+      });
+    }
+
+    if (existingLand.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        error: 'You can only update your own land ads'
+      });
+    }
 
     const land = await LandService.updateLand(
         req.params.id,
@@ -149,9 +169,28 @@ export const updateLand = async (req: Request, res: Response) => {
 // Delete land ad (also deletes associated images from Cloudinary)
 export const deleteLand = async (req: Request, res: Response) => {
   console.log(`=== DELETE LAND REQUEST: ${req.params.id} ===`);
+  console.log('User:', (req as any).user);
 
   try {
     const startTime = Date.now();
+    const userId = (req as any).user.id;
+
+    // Check if user owns this land ad
+    const existingLand = await LandService.getLandById(req.params.id);
+    if (!existingLand) {
+      return res.status(404).json({
+        success: false,
+        error: 'Land ad not found'
+      });
+    }
+
+    if (existingLand.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        error: 'You can only delete your own land ads'
+      });
+    }
+
     const deleted = await LandService.deleteLand(req.params.id);
 
     if (!deleted) {
