@@ -25,6 +25,12 @@ export class LandService {
         return await LandAd.find();
     }
 
+    // Get all lands by specific user
+    static async getLandsByUserId(userId: string) {
+        return await LandAd.find({ userId });
+    }
+
+
     // Get a single land ad by ID
     static async getLandById(id: string) {
         return await LandAd.findById(id);

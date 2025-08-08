@@ -8,7 +8,8 @@ import {
     updateLand,
     deleteLand,
     updateLandImages,
-    removeImagesFromLand
+    removeImagesFromLand,
+    getLandsByUserId
 } from '../controllers/land.controller';
 
 const router = express.Router();
@@ -25,6 +26,7 @@ const upload = multer({
 // Public routes (no authentication required)
 router.get('/', getAllLands);                                          // Get all lands
 router.get('/:id', getLandById);                                       // Get land by ID
+router.get('/user/:userId', getLandsByUserId);
 
 // Protected routes (authentication required)
 router.post('/', protect, upload.array('images', 10), createLand);              // Create with images

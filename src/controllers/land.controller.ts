@@ -75,6 +75,38 @@ export const getAllLands = async (req: Request, res: Response) => {
   }
 };
 
+// Get all lands posted by a specific user
+export const getLandsByUserId = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing userId parameter',
+      });
+    }
+
+    console.log(`Fetching lands for userId: ${userId}`);
+
+    const lands = await LandService.getLandsByUserId(userId);
+
+    res.json({
+      success: true,
+      data: lands,
+      count: lands.length,
+    });
+  } catch (error) {
+    console.error('Error fetching lands by userId:', error);
+
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch land ads by user',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+};
+
 // Get single land ad by ID
 export const getLandById = async (req: Request, res: Response) => {
   try {
@@ -166,56 +198,45 @@ export const updateLand = async (req: Request, res: Response) => {
   }
 };
 
-// Delete land ad (also deletes associated images from Cloudinary)
+// DELETE /api/v1/lands/:id
 export const deleteLand = async (req: Request, res: Response) => {
-  console.log(`=== DELETE LAND REQUEST: ${req.params.id} ===`);
-  console.log('User:', (req as any).user);
-
   try {
     const startTime = Date.now();
-    const userId = (req as any).user.id;
+    const landId = req.params.id;
 
-    // Check if user owns this land ad
-    const existingLand = await LandService.getLandById(req.params.id);
+    const existingLand = await LandService.getLandById(landId);
     if (!existingLand) {
       return res.status(404).json({
         success: false,
-        error: 'Land ad not found'
+        error: 'Land ad not found',
       });
     }
 
-    if (existingLand.userId !== userId) {
-      return res.status(403).json({
+    // Delete land and its images via service
+    const deletedLand = await LandService.deleteLand(landId);
+    if (!deletedLand) {
+      return res.status(500).json({
         success: false,
-        error: 'You can only delete your own land ads'
-      });
-    }
-
-    const deleted = await LandService.deleteLand(req.params.id);
-
-    if (!deleted) {
-      return res.status(404).json({
-        success: false,
-        error: 'Land ad not found'
+        error: 'Failed to delete land ad',
       });
     }
 
     const endTime = Date.now();
     console.log(`Land deleted successfully in ${endTime - startTime}ms`);
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: 'Land ad and associated images deleted successfully',
-      processingTime: `${endTime - startTime}ms`
+      processingTime: `${endTime - startTime}ms`,
     });
   } catch (error) {
     console.error('=== DELETE LAND ERROR ===');
     console.error('Error details:', error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      error: 'Failed to delete land ad',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: 'An error occurred while deleting the land ad',
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 };
