@@ -17,7 +17,11 @@ export const login = async (req: Request, res: Response) => {
 
   const token = generateToken(user._id.toString(),user.role)
 
-  res.status(200).json({ token })
+  res.status(200).json({ 
+    token,
+    userId: user._id.toString(),
+    role: user.role // optional, if needed on frontend
+  })
 }
 
 export const signup = async (req: Request, res: Response) => {

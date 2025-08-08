@@ -4,11 +4,18 @@ import landRoutes from './routes/land.routes'
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'
 import uploadRoutes from './routes/upload.route'
+import cors from 'cors';
 
 dotenv.config()
 
 const app = express()
 app.use(express.json())
+
+// ✅ Enable CORS here BEFORE defining your routes
+app.use(cors({
+  origin: 'http://localhost:5173',  // allow frontend dev server
+  credentials: true,               // allow cookies/auth headers if needed
+}));
 
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/lands', landRoutes)
