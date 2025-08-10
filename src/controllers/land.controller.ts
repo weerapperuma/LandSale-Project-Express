@@ -15,7 +15,6 @@ export const createLand = async (req: Request, res: Response) => {
   try {
     // Validate required fields
     const { title, description, district, city, price, size ,userId} = req.body;
-    console.log("land controller",title,description,district,city,price,size)
 
     if (!title || !description || !district || !city || !price || !size || !userId) {
       return res.status(400).json({
@@ -56,9 +55,7 @@ export const createLand = async (req: Request, res: Response) => {
 // Get all land ads
 export const getAllLands = async (req: Request, res: Response) => {
   try {
-    console.log('Fetching all lands...');
     const lands = await LandService.getAllLands();
-    console.log(`Found ${lands.length} land ads`);
 
     res.json({
       success: true,

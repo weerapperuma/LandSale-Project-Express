@@ -1,56 +1,63 @@
-import User from "../models/User";
 import { Request, Response } from "express";
-
-// Dummy data for demonstration
-let users = [
-  { id: 1, name: "John Doe", email: "john@example.com" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com" },
-];
+import { UserService } from "../services/user.service";
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.id)
-      .select("name email address role phoneNumber");
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json({ message: "User not found" });
+    const user = await UserService.getUserById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-  } catch (error) {
+
+    res.json(user);
+  } catch {
     res.status(400).json({ message: "Invalid user ID" });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await UserService.getAllUsers();
+
+    res.json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+  } catch {
+    res.status(500).json({ success: false, message: "Error fetching users" });
   }
 };
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { role, ...updateFields } = req.body; // prevent role override
-
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { $set: updateFields },
-      { new: true, runValidators: true }
-    ).select("name email address role phoneNumber");
+    const updatedUser = await UserService.updateUser(req.params.id, updateFields);
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json(updatedUser);
-  } catch (error) {
+  } catch {
     res.status(400).json({ message: "Invalid user ID or bad request" });
   }
 };
+
 export const deleteUser = async (req: Request, res: Response) => {
-  try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    try {
+        const deletedUser = await UserService.deleteUser(req.params.id);
 
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User not found" });
+        if (!deletedUser) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.json({
+            success: true,
+            message: "User and their lands deleted successfully (if any)",
+            data: deletedUser
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error" });
     }
-
-    res.json({ message: "User deleted", user: deletedUser });
-  } catch (error) {
-    res.status(400).json({ message: "Invalid user ID" });
-  }
 };
-

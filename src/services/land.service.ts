@@ -2,6 +2,9 @@ import LandAd from '../models/LandAd';
 import {UploadService} from "./upload.service";
 
 export class LandService {
+    static deleteLandsByUserId(id: string) {
+        throw new Error("Method not implemented.");
+    }
     // Create land with images (upload images to cloudinary first)
     static async createLand(data: any, imageFiles?: Express.Multer.File[]) {
         let imageUrls: string[] = []
@@ -150,5 +153,15 @@ export class LandService {
             console.error('Error removing images from land:', error);
             throw error;
         }
+    }
+    
+    // Get all lands belonging to a specific user
+    static async getLandsByUserId(userId: string) {
+        return await LandAd.find({ userId });
+    }
+
+    // Delete all lands belonging to a specific user
+    static async deleteLandsByUserId(userId: string) {
+        return await LandAd.deleteMany({ userId });
     }
 }
