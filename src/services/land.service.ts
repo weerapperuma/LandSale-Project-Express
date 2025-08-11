@@ -154,14 +154,4 @@ export class LandService {
             throw error;
         }
     }
-    
-    // Get all lands belonging to a specific user
-    static async getLandsByUserId(userId: string) {
-        return await LandAd.find({ userId });
-    }
-
-    // Delete all lands belonging to a specific user
-    static async deleteLandsByUserId(userId: string) {
-        return await LandAd.deleteMany({ userId });
-    }
 }
