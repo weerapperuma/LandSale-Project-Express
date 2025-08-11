@@ -61,3 +61,18 @@ export const deleteUser = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+export const updateUserWithRole = async (req: Request, res: Response) => {
+    try {
+        const updateFields = req.body;  // allow role in update
+        const updatedUser = await UserService.updateUserWithRole(req.params.id, updateFields);
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(updatedUser);
+    } catch {
+        res.status(400).json({ message: "Invalid user ID or bad request" });
+    }
+};

@@ -3,7 +3,7 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser,
+  deleteUser, updateUserWithRole,
 } from "../controllers/user.controller";
 import { protect } from "../middleware/auth.middleware";
 
@@ -13,5 +13,6 @@ router.get("/", protect, getAllUsers);
 router.get("/:id", protect, getUserById);
 router.put("/:id", protect, updateUser);
 router.delete("/:id", protect, deleteUser);
+router.put("/admin/:id", protect, updateUserWithRole);
 
 export default router;
